@@ -21,7 +21,7 @@ class Api::V1::GamesController < ApplicationController
   private
  
   def game_params
-    params.permit(:stage)
+    params.require(:game).permit!
   end
  
   def find_game

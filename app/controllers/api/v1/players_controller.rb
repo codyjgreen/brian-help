@@ -1,5 +1,5 @@
 class Api::V1::PlayersController < ApplicationController
-  before_action :find_player, only: [:update]
+  before_action :find_player, only: [:update, :destroy]
   def index
     @players = Player.all
     render json: @players
@@ -17,11 +17,15 @@ class Api::V1::PlayersController < ApplicationController
       render json: { errors: @player.errors.full_messages }, status: :unprocessible_entity
     end
   end
+
+  def destroy
+    @player.destroy()
+  end
  
   private
  
   def player_params
-    params.permit(:name, :score)
+    params.require(:user).permit!
   end
  
   def find_player
