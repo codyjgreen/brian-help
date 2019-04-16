@@ -1,5 +1,3 @@
-
-
 class Game < ApplicationRecord
   has_many :tiles
   has_many :players, through: :tiles
@@ -69,7 +67,7 @@ class Game < ApplicationRecord
     end
 
     # Shuffle the tiles to randomly assign them
-    tiles.shuffle
+    tiles = tiles.shuffle
 
     return tiles
   end
