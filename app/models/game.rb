@@ -1,7 +1,8 @@
+
+
 class Game < ApplicationRecord
   has_many :tiles
   has_many :players, through: :tiles
-  attr_accessor :board, :leader
 
   # Randomly generate board
   def generate_board
@@ -12,8 +13,16 @@ class Game < ApplicationRecord
     (0...board_size).each do |i|
       Tile.create(game_id: self.id, index: i, height: heights[i])
     end
+  end
 
-    @board = Tile.order(index: :asc)
+  # Get current board
+  def board 
+    self.tiles.order(index: :asc)
+  end
+
+  # Get player with current hiscore
+  def leader
+    self.players.order(score: :desc).first
   end
 
   # Get next state
@@ -31,12 +40,6 @@ class Game < ApplicationRecord
     self.update(phase: self.phase+1)
   end
   
-  # Get player with current hiscore
-  def get_current_score_leader
-    @leader = self.includes(:players).order(score: :desc).first
-    @leader
-  end
-
   # Update high score
   def update_hiscore
     curr_leader = self.get_current_score_leader

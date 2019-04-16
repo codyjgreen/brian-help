@@ -1,4 +1,4 @@
 class Player < ApplicationRecord
   belongs_to :game
-  has_one :tile
+  belongs_to :tile
 end
