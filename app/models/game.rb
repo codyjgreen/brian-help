@@ -4,6 +4,7 @@ class Game < ApplicationRecord
 
   # Randomly generate board
   def generate_board
+    self.size ||= 6
     board_size = self.size * self.size
     heights = generate_tile_heights(board_size)
 

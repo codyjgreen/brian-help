@@ -9,11 +9,7 @@ class GamesChannel < ApplicationCable::Channel
 
   def receive(data)
     game = Game.find(data["id"])
-    
-    if data["hiscore"] && data["hiscore"] > game.hiscore 
-      game.update!(hiscore: data["hiscore"])
-    end
-
+    game.update!(hiscore: data["hiscore"])
     ActionCable.server.broadcast('games', data)
   end
 end
