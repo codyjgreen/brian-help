@@ -8,7 +8,7 @@ class Game < ApplicationRecord
     map_size = self.size * self.size
     heights = generate_tile_heights(map_size)
 
-    # Create tile with a random height
+    # Assign heights to tiles
     (0...map_size).each do |i|
       Tile.create(game_id: self.id, index: i, height: heights[i])
     end
@@ -19,28 +19,45 @@ class Game < ApplicationRecord
     self.players.order(score: :desc).first
   end
 
-  # Get next state, return dropped tiles as a string
+  # Get next state, return game state as a string
+  # Randomly raise tiles to fill height 0
+  #   Pick random tiles equal to half of tiles with height 0
   # Decrement tiles based on:
-  #  If a player was on the tile
-  #  Pick random number of tiles equal to half the number of players
-  def tiles_to_drop
-    droppedTiles = []
-    players = self.players
-    counter = (players.length/2).ceil
-    
+  #   If a player was on the tile
+  #   Pick random tiles equal to half the number of players
+  def update_next_state
+    # Maybe if I do this it won't query for this game's tiles every time? ¯\_(ツ)_/¯
+    tiles = self.tiles 
+    players = self.players 
+    voids = tiles.where("height < 1")
+
+    # Pick random tiles to raise
+    raiseTiles = voids.sample((voids.length/2).ceil)
+    dropCounter = (players.length/2).ceil
+    dropTiles = []
+
     # Drop tiles players were on
     players.each do |player|
-      droppedTiles << player.tile.index
+      dropTiles << player.tile
     end 
 
     # Pick random tiles to drop
-    while counter > 0
+    while dropCounter > 0
       randTile = tiles.sample
-      droppedTiles << randTile.index if !droppedTiles.include?(randTile.index) 
-      counter -= 1
+
+      if (!dropTiles.include?(randTile) && randTile.height > 0)
+        dropTiles << randTile 
+        dropCounter -= 1
+      end
     end
 
-    return droppedTiles.join(',')
+    tiles.each do |tile| 
+      if (dropTiles.include?(tile))
+        tile.update(height: tile.height-1)
+      elsif (raiseTiles.include?(tile))
+        tile.update(height: [2, 1, 1, 1].sample)
+      end
+    end
   end
 
   # Update game phase
@@ -68,6 +85,8 @@ class Game < ApplicationRecord
     # USE SUPER SIMPLIFIED VERSION FOR NOW
     return Array.new(map_size, 1)
 
+    # STUFF BELOW FOR MORE COMPLEX IMPLEMENTATION IN THE FUTURE
+    # I RAN OUT OF TIME :(
     tiles = [
       Array.new((map_size*0.5).floor, 1), 
       Array.new((map_size*0.4).floor, 2), 
