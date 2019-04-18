@@ -6,7 +6,6 @@ class CreatePlayers < ActiveRecord::Migration[5.2]
       t.string :color
       t.integer :game_id
       t.integer :tile_id
-      t.integer :tile_index
 
       t.timestamps
     end

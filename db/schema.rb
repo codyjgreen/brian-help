@@ -29,7 +29,6 @@ ActiveRecord::Schema.define(version: 2019_04_14_201953) do
     t.string "color"
     t.integer "game_id"
     t.integer "tile_id"
-    t.integer "tile_index"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

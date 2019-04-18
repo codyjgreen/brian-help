@@ -9,7 +9,7 @@ class PlayersChannel < ApplicationCable::Channel
 
   def receive(data)
     player = Player.find(data["id"])
-    player.update!(tile_id: data["tile_id"], tile_index: player.tile.index, score: data["score"])
+    player.update!(tile_id: data["tile_id"], score: data["score"])
     ActionCable.server.broadcast('players', data)
   end
 end
